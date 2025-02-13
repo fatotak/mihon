@@ -13,6 +13,8 @@ class DownloadPreferences(
 
     fun saveChaptersAsCBZ() = preferenceStore.getBoolean("save_chapter_as_cbz", true)
 
+    fun saveChaptersCbzInRam() = preferenceStore.getBoolean("save_chapter_cbz_in_ram", false)
+
     fun splitTallImages() = preferenceStore.getBoolean("split_tall_images", true)
 
     fun autoDownloadWhileReading() = preferenceStore.getInt("auto_download_while_reading", 0)
