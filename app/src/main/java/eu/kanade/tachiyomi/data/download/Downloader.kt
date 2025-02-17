@@ -39,7 +39,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import logcat.LogPriority
-import mihon.core.archive.TsZipWriter
+import mihon.core.archive.SynchronizedZipWriter
 import mihon.core.archive.ZipWriter
 import nl.adaptivity.xmlutil.serialization.XML
 import okhttp3.Response
@@ -370,7 +370,7 @@ class Downloader(
             val cbzFile = mangaDir.createFile(tmpCbzName) ?: throw IOException("Could not create file $tmpCbzName")
 
             // Create the zip output stream
-            TsZipWriter(context, cbzFile).use { tzw ->
+            SynchronizedZipWriter(context, cbzFile).use { tzw ->
 
                 download.status = Download.State.DOWNLOADING
 
@@ -551,7 +551,7 @@ class Downloader(
      * @param download the download of the page.
      * @param tzw the thread-safe zip writer being written to
      */
-    private suspend fun getOrDownloadImage(page: Page, download: Download, tzw: TsZipWriter) {
+    private suspend fun getOrDownloadImage(page: Page, download: Download, tzw: SynchronizedZipWriter) {
         // If the image URL is empty, do nothing
         if (page.imageUrl == null) {
             return
@@ -780,7 +780,7 @@ class Downloader(
      */
     private fun isDownloadSuccessful(
         download: Download,
-        tzw: TsZipWriter,
+        tzw: SynchronizedZipWriter,
     ): Boolean {
         // Page list hasn't been initialized
         val downloadPageCount = download.pages?.size ?: return false
