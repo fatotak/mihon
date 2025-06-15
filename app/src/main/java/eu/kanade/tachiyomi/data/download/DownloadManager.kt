@@ -255,7 +255,11 @@ class DownloadManager(
     fun migrateManga(current: Manga, currentSource: Source, target: Manga, targetSource: Source, deleteOrphans: Boolean) {
         launchIO {
             val oldMangaDir = provider.findMangaDir(current.title, currentSource) ?: return@launchIO
-            val newMangaDir = provider.getMangaDir(target.title, targetSource)
+            val newMangaDir = provider.getMangaDir(target.title, targetSource).getOrElse { e ->
+                logcat(LogPriority.ERROR, e) { "Failed to get target manga download folder.  See exception for details: ${e.message}" }
+                return@launchIO
+            }
+
             val downloadedChapters = oldMangaDir.listFiles()
             val downloadedChaptersMap =
                 downloadedChapters?.associateBy({ it.nameWithoutExtension }, { it }) ?: return@launchIO
