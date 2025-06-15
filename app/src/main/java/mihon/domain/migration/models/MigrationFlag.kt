@@ -8,7 +8,9 @@ enum class MigrationFlag(val flag: Int) {
     CUSTOM_COVER(0b01000),
     NOTES(0b100000),
     REMOVE_DOWNLOAD(0b10000),
-    ;
+    MIGRATE_DOWNLOADED(0b100000),
+
+        ;
 
     companion object {
         fun fromBit(bit: Int): Set<MigrationFlag> {

@@ -247,22 +247,22 @@ class DownloadManager(
     /**
      * Migrates manga from one source to another.
      *
-     * @param oldManga the origin manga for migration..
-     * @param oldSource the origin source for migration..
-     * @param newManga the target manga for migration.
-     * @param newSource the target source for migration.
+     * @param current the origin manga for migration..
+     * @param currentSource the origin source for migration..
+     * @param target the target manga for migration.
+     * @param targetSource the target source for migration.
      */
-    fun migrateManga(oldManga: Manga, oldSource: Source, newManga: Manga, newSource: Source, deleteOrphans: Boolean) {
+    fun migrateManga(current: Manga, currentSource: Source, target: Manga, targetSource: Source, deleteOrphans: Boolean) {
         launchIO {
-            val oldMangaDir = provider.findMangaDir(oldManga.title, oldSource) ?: return@launchIO
-            val newMangaDir = provider.getMangaDir(newManga.title, newSource)
+            val oldMangaDir = provider.findMangaDir(current.title, currentSource) ?: return@launchIO
+            val newMangaDir = provider.getMangaDir(target.title, targetSource)
             val downloadedChapters = oldMangaDir.listFiles()
             val downloadedChaptersMap =
                 downloadedChapters?.associateBy({ it.nameWithoutExtension }, { it }) ?: return@launchIO
 
             // map old chapters to new chapters.  The names may not be the same.
-            val oldChapters = getChaptersByMangaId.await(oldManga.id)
-            val newChapters = getChaptersByMangaId.await(newManga.id)
+            val oldChapters = getChaptersByMangaId.await(current.id)
+            val newChapters = getChaptersByMangaId.await(target.id)
             val oldChaptersByChapterNumber = oldChapters.associateBy { it.chapterNumber }
 
             // If the chapter is downloaded, migrate it.
@@ -299,22 +299,22 @@ class DownloadManager(
 
                         // Can save chapterUri somewhere here if needed.
 
-                        cache.removeChapter(oldChapter, oldManga)
-                        cache.addChapter(newChapterName, newMangaDir, newManga)
+                        cache.removeChapter(oldChapter, current)
+                        cache.addChapter(newChapterName, newMangaDir, target)
                     }
                 }
             }
 
             if (deleteOrphans) {
-                downloader.removeFromQueue(oldManga)
+                downloader.removeFromQueue(current)
                 oldMangaDir.delete()
-                cache.removeManga(oldManga)
+                cache.removeManga(current)
 
                 // Delete source directory if empty
-                val sourceDir = provider.findSourceDir(oldSource)
+                val sourceDir = provider.findSourceDir(currentSource)
                 if (sourceDir?.listFiles()?.isEmpty() == true) {
                     sourceDir.delete()
-                    cache.removeSource(oldSource)
+                    cache.removeSource(currentSource)
                 }
             }
         }

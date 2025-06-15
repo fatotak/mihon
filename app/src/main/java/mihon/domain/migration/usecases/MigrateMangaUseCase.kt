@@ -111,7 +111,12 @@ class MigrateMangaUseCase(
                 ?.let { insertTrack.awaitAll(it) }
 
             // Delete downloaded
-            if (MigrationFlag.REMOVE_DOWNLOAD in flags && currentSource != null) {
+            if (MigrationFlag.MIGRATE_DOWNLOADED in flags && currentSource != null) {
+                downloadManager.migrateManga(
+                    current = current, currentSource = currentSource,
+                    target = target, targetSource = targetSource,
+                    deleteOrphans =  MigrationFlag.REMOVE_DOWNLOAD in flags)
+            } else if (MigrationFlag.REMOVE_DOWNLOAD in flags && currentSource != null) {
                 downloadManager.deleteManga(current, currentSource)
             }
 

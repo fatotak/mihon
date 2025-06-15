@@ -135,6 +135,7 @@ private class MigrateDialogScreenModel(
                     MigrationFlag.CUSTOM_COVER -> current.hasCustomCover(coverCache)
                     MigrationFlag.NOTES -> current.notes.isNotBlank()
                     MigrationFlag.REMOVE_DOWNLOAD -> downloadManager.getDownloadCount(current) > 0
+                    MigrationFlag.MIGRATE_DOWNLOADED -> downloadManager.getDownloadCount(current) > 0
                 }
                 if (applicable) add(it)
             }
